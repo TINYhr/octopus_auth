@@ -39,7 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-byebug"
 
   spec.add_dependency "activerecord", ">= 3.0.0"
-  spec.add_dependency "ruby-jwt", "~> 2.4"
+  spec.add_dependency "jwt", "~> 2.4"
 
   spec.required_ruby_version = '>= 2.0.0'
 end
