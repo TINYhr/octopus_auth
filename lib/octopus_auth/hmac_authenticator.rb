@@ -10,7 +10,7 @@ module OctopusAuth
       payload = fetch_payload
       return false unless payload
 
-      yield(build_success_result(token, payload))
+      yield(build_success_result(token, payload)) if block_given?
       true
     end
 

@@ -39,7 +39,7 @@ RSpec.describe OctopusAuth::HmacAuthenticator do
       end
 
       it "returns true" do
-        expect(described_class.new(token).authenticate { |result| }).to eq(true)
+        expect(described_class.new(token).authenticate).to eq(true)
       end
 
       it "yields payload" do
