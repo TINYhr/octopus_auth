@@ -10,6 +10,7 @@ require "octopus_auth/revoke"
 require "octopus_auth/queries"
 
 require "octopus_auth/authenticator"
+require "octopus_auth/hmac_authenticator"
 require "octopus_auth/access_scope_validator"
 
 module OctopusAuth

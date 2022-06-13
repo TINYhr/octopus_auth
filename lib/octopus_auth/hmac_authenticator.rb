@@ -1,19 +1,17 @@
 require "jwt"
 
 module OctopusAuth
-  class Authenticator
-    def initialize(token, scope = nil)
+  class HmacAuthenticator
+    def initialize(token)
       @token = token.to_s
-      @scope = scope || OctopusAuth.configuration.default_scope
     end
 
     def authenticate
-      if parsed_payload
-        yield(build_success_result(token, parsed_payload)) if block_given?
-        true
-      else
-        false
-      end
+      payload = fetch_payload
+      return false unless payload
+
+      yield(build_success_result(token, payload))
+      true
     end
 
     private
@@ -24,15 +22,15 @@ module OctopusAuth
       ENV.fetch("HMAC_SECRET")
     end
 
-    def parsed_payload
+    def fetch_payload
       JWT.decode(token, hmac_secret, true, { algorithm: "HS256" })
     rescue
       nil
     end
 
     ResultObject = Struct.new(:token, :data)
-    def build_success_result(access_token, parsed_payload)
-      ResultObject.new(access_token, parsed_payload[0])
+    def build_success_result(access_token, payload)
+      ResultObject.new(access_token, payload[0])
     end
   end
 end
