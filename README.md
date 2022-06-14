@@ -95,6 +95,12 @@ end
 
 TODO: Write rails/rake tasks to generator model migration
 
+## Authentication using JWT HMAC
+
+For now, using JWT HMAC SHA-256 to authenticate, payload is not decided yet, and yield back to app to verify. 
+
+HMAC secret is set by `HMAC_SECRET` environment variable, client must have this secret to create token. `OctopusAuth` doesn't enforce, but token expiration time (`exp` claim) should be enable on client side for security reason. 
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
