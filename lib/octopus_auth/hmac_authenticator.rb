@@ -10,6 +10,11 @@ module OctopusAuth
       payload = fetch_payload
       return false unless payload
 
+      if OctopusAuth.configuration.enfoce_jwt_expiration
+        && !payload.dig(1, :exp)
+          return false
+      end
+
       yield(build_success_result(token, payload)) if block_given?
       true
     end
