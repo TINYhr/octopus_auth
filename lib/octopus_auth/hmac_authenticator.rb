@@ -2,12 +2,32 @@ require "jwt"
 
 module OctopusAuth
   class HmacAuthenticator
+    class << self
+      def jwt_params
+        @jwt_params ||= if Array(OctopusAuth.configuration.jwt_issuers).empty?
+          { algorithm: "HS256" }
+        else
+          { algorithm: "HS256", iss: OctopusAuth.configuration.jwt_issuers }
+        end
+      end
+
+      def hmac_secret
+        @hmac_secret ||= ENV.fetch("HMAC_SECRET")
+      end
+
+      def fetch(token)
+        JWT.decode(token, hmac_secret, true, jwt_params)
+      rescue
+        nil
+      end
+    end
+
     def initialize(token)
       @token = token.to_s
     end
 
     def authenticate
-      payload = fetch_payload
+      payload = self.class.fetch(token)
       return false unless payload
 
       if OctopusAuth.configuration.enforce_jwt_expiration
@@ -22,22 +42,6 @@ module OctopusAuth
     private
 
     attr_reader :token
-
-    def hmac_secret
-      ENV.fetch("HMAC_SECRET")
-    end
-
-    def fetch_payload
-      JWT.decode(token, hmac_secret, true, jwt_params)
-    rescue
-      nil
-    end
-
-    def jwt_params
-      return { algorithm: "HS256" } if Array(OctopusAuth.configuration.jwt_issuers).empty?
-
-      { algorithm: "HS256", iss: OctopusAuth.configuration.jwt_issuers }
-    end
 
     ResultObject = Struct.new(:token, :data)
     def build_success_result(access_token, payload)
