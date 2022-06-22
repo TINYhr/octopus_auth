@@ -10,7 +10,7 @@ module OctopusAuth
       payload = fetch_payload
       return false unless payload
 
-      if OctopusAuth.configuration.enfoce_jwt_expiration
+      if OctopusAuth.configuration.enforce_jwt_expiration
         && !payload.dig(1, :exp)
           return false
       end
@@ -28,9 +28,15 @@ module OctopusAuth
     end
 
     def fetch_payload
-      JWT.decode(token, hmac_secret, true, { algorithm: "HS256" })
+      JWT.decode(token, hmac_secret, true, jwt_params)
     rescue
       nil
+    end
+
+    def jwt_params
+      return { algorithm: "HS256" } if Array(OctopusAuth.configuration.jwt_issuers).empty?
+
+      { algorithm: "HS256", iss: OctopusAuth.configuration.jwt_issuers }
     end
 
     ResultObject = Struct.new(:token, :data)

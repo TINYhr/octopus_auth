@@ -9,6 +9,6 @@ module OctopusAuth
     attr_accessor :access_scopes_delimiter
     attr_accessor :access_scopes_wildcard
 
-    attr_accessor :enfoce_jwt_expiration
+    attr_accessor :enforce_jwt_expiration
   end
 end
