@@ -10,5 +10,6 @@ module OctopusAuth
     attr_accessor :access_scopes_wildcard
 
     attr_accessor :enforce_jwt_expiration
+    attr_accessor :jwt_issuers
   end
 end
