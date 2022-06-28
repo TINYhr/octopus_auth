@@ -8,6 +8,14 @@ module OctopusAuth
         @hmac_secret = nil
       end
 
+      def fetch(token)
+        JWT.decode(token, hmac_secret, true, jwt_params)
+      rescue
+        nil
+      end
+
+      private
+
       def jwt_params
         @jwt_params ||= if Array(OctopusAuth.configuration.jwt_issuers).empty?
           { algorithm: "HS256" }
@@ -22,12 +30,6 @@ module OctopusAuth
 
       def hmac_secret
         @hmac_secret ||= OctopusAuth.configuration.hmac_secret
-      end
-
-      def fetch(token)
-        JWT.decode(token, hmac_secret, true, jwt_params)
-      rescue
-        nil
       end
     end
 
