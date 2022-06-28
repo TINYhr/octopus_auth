@@ -3,16 +3,25 @@ require "jwt"
 module OctopusAuth
   class HmacAuthenticator
     class << self
+      def reset
+        @jwt_params = nil
+        @hmac_secret = nil
+      end
+
       def jwt_params
         @jwt_params ||= if Array(OctopusAuth.configuration.jwt_issuers).empty?
           { algorithm: "HS256" }
         else
-          { algorithm: "HS256", iss: OctopusAuth.configuration.jwt_issuers }
+          {
+            algorithm: "HS256",
+            iss: OctopusAuth.configuration.jwt_issuers,
+            verify_iss: true
+          }
         end
       end
 
       def hmac_secret
-        @hmac_secret ||= ENV.fetch("HMAC_SECRET")
+        @hmac_secret ||= OctopusAuth.configuration.hmac_secret
       end
 
       def fetch(token)
@@ -31,8 +40,9 @@ module OctopusAuth
       return false unless payload
 
       if OctopusAuth.configuration.enforce_jwt_expiration
-        && !payload.dig(1, :exp)
-          return false
+        exp = payload.dig(0, "exp")
+        return false if !exp
+        return false if exp.to_i - Time.now.to_i > OctopusAuth.configuration.enforce_jwt_expiration
       end
 
       yield(build_success_result(token, payload)) if block_given?
