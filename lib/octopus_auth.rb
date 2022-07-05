@@ -24,6 +24,6 @@ module OctopusAuth
   end
 
   def self.reset
-    self.configuration = OctopusAuth::Configuration.new
+    self.configuration = nil
   end
 end

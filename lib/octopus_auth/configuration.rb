@@ -8,5 +8,9 @@ module OctopusAuth
     attr_accessor :model_readonly
     attr_accessor :access_scopes_delimiter
     attr_accessor :access_scopes_wildcard
+
+    attr_accessor :hmac_secret
+    attr_accessor :enforce_jwt_expiration
+    attr_accessor :jwt_issuers
   end
 end
